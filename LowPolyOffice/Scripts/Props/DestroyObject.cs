@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Office.Props {
     public class DestroyObject : MonoBehaviour {
 
+        [Tooltip("Wait for seconds before destroy object")]
         public float delay = 1f;
 
         private IEnumerator Start() {

@@ -1,4 +1,6 @@
-﻿using Office.Props;
+﻿// Fade Out -> Show text for N seconds -> Fade In
+
+using Office.Props;
 
 namespace Office.Interaction {
     public class FadeInOutReaction : Reaction {

@@ -21,27 +21,59 @@ namespace Office.Text {
         }
         #endregion
 
+        #region Subtitles
+        [Header("Subtitles")]
+
+        [Space(5f)]
         public TextMeshProUGUI textMesh;
         public Image backgroundImage;
         public CanvasGroup canvasGroup;
+
+        [Space(5f)]
+        [Tooltip("Speed to fadeIn subtitles panel")]
         public float fadeSpeed = 2f;
+
+        [Tooltip("Delay before input unlocked after dialog is finished")]
         public float onDialogExitDelay = 0.2f;
+
+        [Tooltip("Delay before input unlocked after enter a dialog")]
         public float onDialogEnterDelay = 0.5f;
+        #endregion
+
+        #region Label
+        [Header("Label")]
+
+        [Space(5f)]
         public RectTransform label;
         public CanvasGroup labelCanvasGroup;
         public TextMeshProUGUI labelText;
-        public float labelFadeSpeed = 2f;
-        public Interactable currentInteractable;
 
+        [Space(5f)]
+        [Tooltip("Speed to fadeIn label")]
+        public float labelFadeSpeed = 2f;
+        #endregion
+
+        #region Public Fields
+        // Is player in dialog?
         public bool inDialog { get; private set; } = false;
+
+        // Represents if player clicked to go to next dialog line
         public bool nextLineTriggered { get; private set; } = false;
 
-        private int currentLineIndex = 0;
-        private DialogSet currentDialog;
-        private Coroutine currentRoutine;
-        private Coroutine currentLabelRoutine;
+        #endregion
+
+        #region Private Fields
         private DialogExecutor currentDialogExecutor;
+
+        private DialogSet currentDialog;
+        private int currentLineIndex = 0;
+
+        private Coroutine currentSubtitlesRoutine;
+        private Coroutine currentLabelRoutine;
+
         private bool isLableActive;
+        private Interactable currentInteractable;
+        #endregion
 
         private void Start() {
             PlayerInput.instance.onMouseEnterInteractable.AddListener(UpdateLabel);
@@ -49,8 +81,8 @@ namespace Office.Text {
 
         public void WriteTextByUniqueName(string textUniqueName) {
             string text = TextDatabase.instance.GetText(textUniqueName);
-            if (currentRoutine != null) StopCoroutine(currentRoutine);
-            currentRoutine = StartCoroutine(ShowTextCoroutine(text));
+            if (currentSubtitlesRoutine != null) StopCoroutine(currentSubtitlesRoutine);
+            currentSubtitlesRoutine = StartCoroutine(ShowTextCoroutine(text));
         }
 
         public void StartDialog(DialogSet dialogSet, DialogExecutor dialogExecutor) {
