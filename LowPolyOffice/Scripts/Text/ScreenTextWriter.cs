@@ -76,11 +76,11 @@ namespace Office.Text {
         #endregion
 
         private void Start() {
-            PlayerInput.instance.onMouseEnterInteractable.AddListener(UpdateLabel);
+            PlayerInput.instance.onMouseOverInteractable.AddListener(UpdateLabel);
         }
 
         public void WriteTextByUniqueName(string textUniqueName) {
-            string text = TextDatabase.instance.GetText(textUniqueName);
+            string text = TextDatabase.instance.GetTextByName(textUniqueName);
             if (currentSubtitlesRoutine != null) StopCoroutine(currentSubtitlesRoutine);
             currentSubtitlesRoutine = StartCoroutine(ShowTextCoroutine(text));
         }

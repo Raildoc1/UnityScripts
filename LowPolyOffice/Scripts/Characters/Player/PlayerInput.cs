@@ -1,5 +1,4 @@
 ﻿using Office.Interaction;
-using Office.Props;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,39 +18,54 @@ namespace Office.Character.Player {
         }
         #endregion
 
+        #region Keys
+
+        [Header("Keys")]
+
+        [Tooltip("Main key, used for walk to position and interact")]
         public KeyCode InteractKey = KeyCode.Mouse0;
+
+        [Tooltip("Used for run to position and run to interactable")]
         public KeyCode RunToPositionKey = KeyCode.Mouse1;
 
-        public bool debugMode = false;
-        public GameObject debugPivotObj;
-        public LayerMask raycastLayerMask;
+        #endregion
 
-        private bool _blockInput = true;
-
-        public bool blockInput { 
-            get {
-                return _blockInput;
-            } 
-            set {
-                //Debug.Log($"Input blocked = {value}");
-                _blockInput = value; 
-            } 
-        }
-
-        public bool blockRaycastInput { get; set; } = false;
+        #region Settings
 
         private const float MaxRayDistance = 180f;
 
-        private Interactable currentInteractable;
+        [Header("Settings")]
+        [Tooltip("Raycast layers")]
+        public LayerMask raycastLayerMask;
 
+        #endregion
+
+        #region Block Input
+        public bool blockInput { get; set; } = true; // Blocks all input
+        public bool blockRaycastInput { get; set; } = false; // Blocks walk to position and interaction
+        #endregion
+
+        #region Private Fields
         private Coroutine blockInputRoutine;
         private Coroutine blockRaycastInputRoutine;
+        #endregion
 
         #region Events
         public UnityEvent<Vector3, bool> onGroundClickEvent;
         public UnityEvent<Interactable, bool> onInteractableClickEvent;
-        public UnityEvent<Interactable> onMouseEnterInteractable;
+        public UnityEvent<Interactable> onMouseOverInteractable;
         public UnityEvent onAnyKeyDownEvenet;
+        #endregion
+
+        #region Debug
+        [Header("Debug")]
+
+        [Tooltip("Debug mode")]
+        public bool debugMode = false;
+
+        [Tooltip("This object will be teleported to raycast hit position")]
+        public GameObject debugPivotObj;
+
         #endregion
 
         private void Update() {
@@ -80,15 +94,11 @@ namespace Office.Character.Player {
         private void FixedUpdate() {
 
             if (blockInput || blockRaycastInput) {
-                onMouseEnterInteractable.Invoke(null);
+                onMouseOverInteractable.Invoke(null);
                 return; 
             }
-
-            Interactable interactable = MousePositionRaycast(out _);
-
-            if (!currentInteractable || !currentInteractable.GetHashCode().Equals(interactable.GetHashCode())) {
-                onMouseEnterInteractable.Invoke(interactable);
-            }
+            
+            onMouseOverInteractable.Invoke(MousePositionRaycast(out _));
         }
 
         private void FindTarget(out Vector3 point, out Interactable interactable) {

@@ -1,15 +1,12 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Office.Props {
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeInOut : MonoBehaviour {
 
         public TextMeshProUGUI textMeshProUGUI;
-
-        public bool isFading { get; private set; } = false;
 
         [Range(0f, 5f)]
         [SerializeField]
@@ -27,7 +24,7 @@ namespace Office.Props {
             }
         }
 
-        private Coroutine fadeRoutine;
+        private Coroutine fadeRoutine; // stores current routine to turn it off on new coroutine starts before current is finished
 
         public void Fade(float targetAlpha, bool immediate = false) {
             if (immediate) {
@@ -40,20 +37,12 @@ namespace Office.Props {
 
         public IEnumerator FadeRoutine(float targetAlpha) {
 
-            while (isFading) {
-                yield return null;
-            } 
-
-            isFading = true;
-
             yield return new WaitForSeconds(delayTime);
 
             while (!Mathf.Approximately(targetAlpha, blackScreenCanvas.alpha)) {
                 blackScreenCanvas.alpha = Mathf.MoveTowards(blackScreenCanvas.alpha, targetAlpha, Time.deltaTime / timeToFade);
                 yield return null;
             }
-
-            isFading = false;
 
         }
 

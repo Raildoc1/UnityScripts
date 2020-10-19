@@ -15,6 +15,8 @@ namespace Office.Text {
         }
         #endregion
 
+        public bool debugMode = false;
+
         private TextCollection textCollection;
 
         private List<TextEntity> texts {
@@ -23,7 +25,7 @@ namespace Office.Text {
             }
         }
 
-        public string GetText(string uniqueName) {
+        public string GetTextByName(string uniqueName) {
             foreach (var text in texts) {
                 if (text.uniqueName.Equals(uniqueName)) {
                     return text.text;
@@ -33,11 +35,11 @@ namespace Office.Text {
         }
 
         public void LoadNames(string language) {
-            //Debug.Log($"Loading {language} names...");
+            if (debugMode) Debug.Log($"Loading {language} names...");
             try {
                 string json = Resources.Load<TextAsset>("Texts/" + language).text;
                 textCollection = JsonUtility.FromJson<TextCollection>(json);
-                //Debug.Log($"Items loaded successfully! {texts.Count} name{((texts.Count == 1) ? "" : "s")} found!");
+                if (debugMode) Debug.Log($"Items loaded successfully! {texts.Count} name{((texts.Count == 1) ? "" : "s")} found!");
             } catch (System.NullReferenceException) {
                 Debug.LogError($"Failed to load {language} names!");
             }

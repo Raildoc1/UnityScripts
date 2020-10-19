@@ -5,7 +5,7 @@ namespace Office.Character {
     public class HeadLookAt : MonoBehaviour {
 
         [Tooltip("Turns on/off HeadLookAt")]
-        public bool isLookingAt = false;
+        public bool canLookingAt = false;
 
         [Tooltip("Transform to look at (Set it to null to turn off HeadLookAt)")]
         public Transform lookObj = null;
@@ -26,7 +26,7 @@ namespace Office.Character {
 
             if (!animator) return;
 
-            if (isLookingAt) {
+            if (canLookingAt) {
                 if (lookObj != null) {
                     animator.SetLookAtWeight(lookWeight);
                     animator.SetLookAtPosition(lookObj.position + offset);

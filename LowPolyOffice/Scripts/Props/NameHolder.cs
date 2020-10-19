@@ -7,7 +7,7 @@ namespace Office.Props {
         private string UniqueName = "";
 
         public string GetName() {
-            return TextDatabase.instance.GetText(UniqueName);
+            return TextDatabase.instance.GetTextByName(UniqueName);
         }
     }
 }

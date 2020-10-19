@@ -13,6 +13,8 @@ namespace Office.Inventory {
         }
         #endregion
 
+        public bool debugMode = false;
+
         private void Start() {
             LoadItems("EN");
         }
@@ -24,7 +26,7 @@ namespace Office.Inventory {
             }
         }
 
-        public Item GetItemName(string uniqueItemName) {
+        public Item GetItemByName(string uniqueItemName) {
             foreach (var item in items) {
                 if (item.uniqueName.Equals(uniqueItemName)) return item;
             }
@@ -35,11 +37,11 @@ namespace Office.Inventory {
         private ItemList itemCollection;
 
         public void LoadItems(string language) {
-            //Debug.Log($"Loading {language} items...");
+            if (debugMode) Debug.Log($"Loading {language} items...");
             try {
                 string json = Resources.Load<TextAsset>("Items/" + language).text;
                 itemCollection = JsonUtility.FromJson<ItemList>(json);
-                //Debug.Log($"Items loaded successfully! {items.Count} item{((items.Count == 1) ? "" : "s")} found!");
+                if (debugMode) Debug.Log($"Items loaded successfully! {items.Count} item{((items.Count == 1) ? "" : "s")} found!");
             } catch (System.NullReferenceException) {
                 Debug.LogError($"Failed to load {language} items!");
             }
