@@ -1,3 +1,7 @@
+// Script is taken from Unity Adventure Tutorial
+// Some code was changed
+// Changed or new lines marked as 'KG'
+
 using UnityEngine;
 using UnityEditor;
 using Office.Interaction;
@@ -10,11 +14,13 @@ using Office.Interaction;
 public class InteractableEditor : EditorWithSubEditors<ConditionCollectionEditor, ConditionCollection>
 {
     private Interactable interactable;
+    private SerializedProperty matchTargetTransformProperty;        // Represents the matchTargetTransform bool on the Interactable. KG
     private SerializedProperty collectionsProperty;                 // Represents the ConditionCollection array on the Interactable.
     private SerializedProperty defaultReactionCollectionProperty;   // Represents the ReactionCollection which is used if none of the ConditionCollections are.
 
 
     private const float collectionButtonWidth = 125f;
+    private const string interactablePropMatchTargetTransformName = "matchTargetTransform"; // KG
     private const string interactablePropConditionCollectionsName = "conditionCollections";
     private const string interactablePropDefaultReactionCollectionName = "defaultReactionCollection";
 
@@ -24,6 +30,7 @@ public class InteractableEditor : EditorWithSubEditors<ConditionCollectionEditor
         interactable = (Interactable)target;
 
         // Cache the SerializedProperties.
+        matchTargetTransformProperty = serializedObject.FindProperty(interactablePropMatchTargetTransformName);
         collectionsProperty = serializedObject.FindProperty(interactablePropConditionCollectionsName);
         defaultReactionCollectionProperty = serializedObject.FindProperty(interactablePropDefaultReactionCollectionName);
         
@@ -51,7 +58,12 @@ public class InteractableEditor : EditorWithSubEditors<ConditionCollectionEditor
     {
         // Pull information from the target into the serializedObject.
         serializedObject.Update ();
-        
+
+        // Displays matchTargetTransform bool (KG)
+        EditorGUILayout.BeginHorizontal(GUI.skin.box);
+        matchTargetTransformProperty.boolValue = EditorGUILayout.Toggle(new GUIContent("Match Target Transform", "Will player match target position and rotation."), matchTargetTransformProperty.boolValue);
+        EditorGUILayout.EndHorizontal();
+
         // If necessary, create editors for the ConditionCollections.
         CheckAndCreateSubEditors(interactable.conditionCollections);
 

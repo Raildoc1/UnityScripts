@@ -1,10 +1,13 @@
 ﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Office.Props {
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeInOut : MonoBehaviour {
+
+        public TextMeshProUGUI textMeshProUGUI;
 
         public bool isFading { get; private set; } = false;
 
@@ -24,11 +27,14 @@ namespace Office.Props {
             }
         }
 
+        private Coroutine fadeRoutine;
+
         public void Fade(float targetAlpha, bool immediate = false) {
             if (immediate) {
                 blackScreenCanvas.alpha = targetAlpha;
             } else {
-                StartCoroutine(FadeRoutine(targetAlpha));
+                if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+                fadeRoutine = StartCoroutine(FadeRoutine(targetAlpha));
             }
         }
 
@@ -51,5 +57,26 @@ namespace Office.Props {
 
         }
 
+        public void FadeShowText(string text, float secondsLength) {
+            if (fadeRoutine != null) StopCoroutine(fadeRoutine);
+            fadeRoutine = StartCoroutine(FadeShowTextRoutine(text, secondsLength));
+        }
+
+        public IEnumerator FadeShowTextRoutine(string text, float secondsLength) {
+
+            yield return FadeRoutine(0f);
+
+            textMeshProUGUI.text = text;
+            textMeshProUGUI.enabled = true;
+
+            yield return FadeRoutine(1f);
+
+            yield return new WaitForSeconds(secondsLength);
+
+            yield return FadeRoutine(0f);
+
+            textMeshProUGUI.enabled = false;
+
+        }
     }
 }

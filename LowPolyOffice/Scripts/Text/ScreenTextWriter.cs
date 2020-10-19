@@ -76,7 +76,12 @@ namespace Office.Text {
                 return;
             }
 
-            WriteTextByUniqueName(currentDialog.lines[currentLineIndex++].lineUniqueName);
+            if(currentDialog.lines[currentLineIndex].reactionCollection)
+                currentDialog.lines[currentLineIndex].reactionCollection.React();
+
+            WriteTextByUniqueName(currentDialog.lines[currentLineIndex].lineUniqueName);
+
+            currentLineIndex++;
         }
 
         public void EndDialog() {

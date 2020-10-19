@@ -1,3 +1,7 @@
+// Script is taken from Unity Adventure Tutorial
+// Some code was changed
+// Changed or new lines marked as 'KG'
+
 using System;
 using UnityEngine;
 using System.Collections.Generic;
@@ -16,7 +20,7 @@ public class ReactionCollectionEditor : EditorWithSubEditors<ReactionEditor, Rea
 {
     private ReactionCollection reactionCollection;          // Reference to the target.
     private SerializedProperty reactionsProperty;           // Represents the array of Reactions.
-    private SerializedProperty unlockInputDelayProperty;
+    private SerializedProperty unlockInputDelayProperty;    // Represents unlockInputDelay float. KG
 
     private Type[] reactionTypes;                           // All the non-abstract types which inherit from Reaction.  This is used for adding new Reactions.
     private string[] reactionTypeNames;                     // The names of all appropriate Reaction types.
@@ -26,7 +30,7 @@ public class ReactionCollectionEditor : EditorWithSubEditors<ReactionEditor, Rea
     private const float dropAreaHeight = 50f;               // Height in pixels of the area for dropping scripts.
     private const float controlSpacing = 5f;                // Width in pixels between the popup type selection and drop area.
     private const string reactionsPropName = "reactions";   // Name of the field for the array of Reactions.
-    private const string unlockInputDelayPropName = "unlockInputDelay";   // Name of the field for the array of Reactions.
+    private const string unlockInputDelayPropName = "unlockInputDelay";   // Name of the field unlockInputDelay. KG.
 
 
     private readonly float verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
@@ -38,10 +42,9 @@ public class ReactionCollectionEditor : EditorWithSubEditors<ReactionEditor, Rea
         // Cache the target.
         reactionCollection = (ReactionCollection)target;
 
-        // Cache the SerializedProperty
+        // Cache SerializedProperties
         reactionsProperty = serializedObject.FindProperty(reactionsPropName);
-
-        unlockInputDelayProperty = serializedObject.FindProperty(unlockInputDelayPropName);
+        unlockInputDelayProperty = serializedObject.FindProperty(unlockInputDelayPropName); // KG
 
         // If new editors are required for Reactions, create them.
         CheckAndCreateSubEditors (reactionCollection.reactions);
@@ -71,9 +74,9 @@ public class ReactionCollectionEditor : EditorWithSubEditors<ReactionEditor, Rea
         // Pull all the information from the target into the serializedObject.
         serializedObject.Update ();
 
+        // Displays unlock input delay (KG)
         EditorGUILayout.BeginHorizontal(GUI.skin.box);
-        EditorGUILayout.LabelField("Unlock input delay");
-        reactionCollection.unlockInputDelay = EditorGUILayout.FloatField(reactionCollection.unlockInputDelay);
+        unlockInputDelayProperty.floatValue = EditorGUILayout.FloatField(new GUIContent("Unlock input delay", "Seconds to wait before unlock input"), unlockInputDelayProperty.floatValue);
         EditorGUILayout.EndHorizontal();
 
         // If new editors for Reactions are required, create them.

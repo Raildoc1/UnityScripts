@@ -4,6 +4,9 @@ using UnityEngine;
 namespace Office.Interaction {
     public class Interactable : MonoBehaviour {
 
+        [Tooltip("Will player match target position and rotation.")]
+        public bool matchTargetTransform = true;
+
         public ConditionCollection[] conditionCollections = new ConditionCollection[0];
         public ReactionCollection defaultReactionCollection;
 

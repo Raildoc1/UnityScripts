@@ -8,24 +8,68 @@ namespace Office.Character {
     [RequireComponent(typeof(Animator))]
     public class Mover : MonoBehaviour {
 
+        #region Speed
+
+        [Header("Player Speed Constants")]
         public static readonly float walkSpeed = 1.212757f;
         public static readonly float runSpeed = 3.249728f; //5.841163f - sprint; 3.249728f - jog
 
-        public float inputDelay = 0.5f;
-        public float turnSpeedThreshold = 0.5f;
-        public float speedDampTime = 0.1f;
-        public float slowingSpeed = 0.175f;
-        public float turnSmothing = 15f;
-        public float maxDistanceToNavMesh = 10f;
-        public float runningStoppingDistance = 1f;
-        public float walkStoppingDistance = .5f;
+        #endregion
 
+        #region Default stopping distance
+        [Header("Default stopping distance")]
+
+        [Tooltip("Player will stop walking if distance to target less than WalkStoppingDistance")]
+        public const float defaultWalkStoppingDistance = 0.1f;
+
+        [Tooltip("Player will stop running if distance to target less than RunStoppingDistance")]
+        public const float defaultRunStoppingDistance = 0.5f;
+
+        #endregion
+
+        #region Settings
+        [Header("Settings")]
+
+        [Tooltip("Speed than player starts rotate")]
+        public float turnSpeedThreshold = 0.5f;
+
+        [Tooltip("DumpTime for animator.setFloat")]
+        public float speedDampTime = 0.1f;
+
+        [Tooltip("Player's rotation speed")]
+        public float turnSmothing = 15f;
+
+        [Tooltip("Max distance to navMesh to register player's click")]
+        public float maxDistanceToNavMesh = 10f;
+
+        #endregion
+
+        #region Ignore distance
+
+        [Header("Ignore distance")]
+
+        [Tooltip("Player won't start running if target is closer than runningIgnoreDistance")]
+        public float runningIgnoreDistance = 1f;
+
+        [Tooltip("Player won't start walking if target is closer than walkIgnoreDistance")]
+        public float walkIgnoreDistance = .5f;
+
+        #endregion
+
+        #region Debug
+
+        [Header("Debug")]
         public bool debugMode = false;
         public GameObject debugPivotObj;
 
-        private bool _isRunning = false;
-        private NavMeshAgent _agent;
+        #endregion
+
+        #region Public Fields
+        // is player moving?
         public bool isMoving { get; private set; } = false;
+
+        // used to set player's speed to run or walk
+        private bool _isRunning = false;
         public bool isRunning {
             get { return _isRunning; }
             set {
@@ -33,7 +77,11 @@ namespace Office.Character {
                 agent.speed = _isRunning ? runSpeed : walkSpeed;
             }
         }
+        #endregion
 
+        #region Private And Protected Fields
+        // stores player's NavMeshAgent
+        private NavMeshAgent _agent;
         public NavMeshAgent agent {
             get {
                 if (!_agent) _agent = GetComponent<NavMeshAgent>();
@@ -44,9 +92,9 @@ namespace Office.Character {
         protected Animator animator;
         protected Vector3 destinationPosition;
 
-        protected const float stopDistanceProportion = .1f;
-
         protected readonly int hashSpeedPara = Animator.StringToHash("Speed");
+
+        #endregion
 
         private void OnEnable() {
             PlayerInput.instance.onGroundClickEvent.AddListener(MoveTo);
@@ -78,11 +126,9 @@ namespace Office.Character {
 
             float speed = agent.desiredVelocity.magnitude;
 
-            if (agent.remainingDistance <= agent.stoppingDistance /* stopDistanceProportion*/) {
+            if (agent.remainingDistance <= agent.stoppingDistance) {
                 Stopping(out speed);
-            }/* else if (agent.remainingDistance <= agent.stoppingDistance) {
-                Slowing(out speed, agent.remainingDistance);
-            }*/ else if (speed > turnSpeedThreshold) {
+            } else if (speed > turnSpeedThreshold) {
                 Moving();
             }
 
@@ -91,19 +137,10 @@ namespace Office.Character {
 
         protected void Stopping(out float speed) {
             agent.isStopped = true;
-            //transform.position = destinationPosition;
             speed = 0f;
             isMoving = false;
         }
-        /*
-        protected void Slowing(out float speed, float distanceToDestionation) {
-            //agent.isStopped = true;
-            //transform.position = Vector3.MoveTowards(transform.position, destinationPosition, slowingSpeed * Time.deltaTime);
-            float proportionalDistance = 1f - distanceToDestionation / agent.stoppingDistance;
-            speed = Mathf.Lerp(slowingSpeed, 0f, proportionalDistance);
-            //isMoving = false;
-        }
-        */
+
         protected void Moving() {
             Quaternion targetRotation = Quaternion.LookRotation(agent.desiredVelocity);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, turnSmothing * Time.deltaTime);
@@ -117,8 +154,8 @@ namespace Office.Character {
 
             this.isRunning = isRunning;
 
-            if (isRunning && Vector3.Distance(destionation, transform.position) < runningStoppingDistance) return;
-            else if (Vector3.Distance(destionation, transform.position) < walkStoppingDistance) return;
+            if (isRunning && Vector3.Distance(destionation, transform.position) < runningIgnoreDistance) return;
+            else if (Vector3.Distance(destionation, transform.position) < walkIgnoreDistance) return;
 
             NavMeshHit hit;
 
